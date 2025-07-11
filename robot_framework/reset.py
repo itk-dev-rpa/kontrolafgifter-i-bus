@@ -1,5 +1,7 @@
 """This module handles resetting the state of the computer so the robot can work with a clean slate."""
 
+import os
+
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 
 
@@ -25,6 +27,7 @@ def close_all(orchestrator_connection: OrchestratorConnection) -> None:
 def kill_all(orchestrator_connection: OrchestratorConnection) -> None:
     """Forcefully close all applications used by the robot."""
     orchestrator_connection.log_trace("Killing all applications.")
+    os.system('taskkill /f /im winword.exe')
 
 
 def open_all(orchestrator_connection: OrchestratorConnection) -> None:
