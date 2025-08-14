@@ -44,19 +44,24 @@ def send_letter(session, aftaler: list[str], receiver_cpr: str) -> bool:
     session.findById("wnd[0]/usr/cmbZHJM0011_TEMPLAT-ID").key = "7510898750"
 
     # Filter on aftaler
-    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0320/subSUB_0320:ZDKD0052_CREATE_IDENT_LETTERS:1110/btn%_P_VTREF1_%_APP_%-VALU_PUSH").press()
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/cntlALV_0320/shellcont/shell").setCurrentCell(-1, "VTREF")
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/cntlALV_0320/shellcont/shell").selectColumn("VTREF")
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/cntlALV_0320/shellcont/shell").contextMenu()
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/cntlALV_0320/shellcont/shell").selectContextMenuItem("&FILTER")
+    session.findById("wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105/btn%_%%DYN001_%_APP_%-VALU_PUSH").press()
     _set_clipboard("\r\n".join(aftaler))
-    session.findById("wnd[1]/tbar[0]/btn[24]").press()
-    session.findById("wnd[1]/tbar[0]/btn[8]").press()
+    session.findById("wnd[2]/tbar[0]/btn[24]").press()
+    session.findById("wnd[2]/tbar[0]/btn[8]").press()
+    session.findById("wnd[1]/tbar[0]/btn[0]").press()
+
+    # Insert letter data
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/subSUB_0320:ZDKD0052_CREATE_IDENT_LETTERS:0323/cmbTFK047ET-CHGID").key = " "
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/subSUB_0320:ZDKD0052_CREATE_IDENT_LETTERS:0323/cmbTFK047ST-MANSP").key = "B"
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/subSUB_0320:ZDKD0052_CREATE_IDENT_LETTERS:0323/txtFKKRACT-MSPOP_DAYS").text = "19"
 
     # Select all and generate letter
-    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0320/cntlALV_0320/shellcont/shell").selectAll()
-    session.findById("wnd[0]/tbar[1]/btn[8]").press()
-    session.findById("wnd[1]/usr/cmbTFK047ET-CHGID").key = " "
-    session.findById("wnd[1]/usr/cmbTFK047ST-MANSP").key = "B"
-    session.findById("wnd[1]/usr/txtFKKRACT-MSPOP_DAYS").text = "19"
-    session.findById("wnd[1]/tbar[0]/btn[8]").press()
-    session.findById("wnd[0]/tbar[1]/btn[8]").press()
+    session.findById("wnd[0]/usr/subSEARCH1:ZDKD0052_CREATE_IDENT_LETTERS:0322/cntlALV_0320/shellcont/shell").selectAll()
+    session.findById("wnd[0]/usr/btnPRINT_BUTTON").press()
 
     # Enter title and receiver
     session.findById("wnd[1]/usr/radGS_SCREEN_600-RAD2").select()
@@ -81,10 +86,6 @@ def send_letter(session, aftaler: list[str], receiver_cpr: str) -> bool:
         # Send letter
         session.findById("wnd[1]/tbar[0]/btn[8]").press()
         letter_sent = True
-
-    # Go back
-    session.findById("wnd[0]/tbar[0]/btn[3]").press()
-    session.findById("wnd[0]/tbar[0]/btn[3]").press()
 
     return letter_sent
 
@@ -114,5 +115,4 @@ def _handle_word_window():
     else:
         raise RuntimeError("Word window not found.")
 
-    word.SendKeys("{ctrl}s")
-    word.SendKeys("{ctrl}{f4}")
+    word.SendKeys("{ctrl}w{ctrl}w", interval=0.5)
