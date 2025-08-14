@@ -11,6 +11,9 @@ from itk_dev_shared_components.sap import multi_session, fmcacov
 from itk_dev_shared_components.misc import cpr_util
 from itk_dev_shared_components.smtp import smtp_util
 import pyodbc
+from python_serviceplatformen.authentication import KombitAccess
+from python_serviceplatformen import digital_post
+import win32api
 
 from robot_framework import config
 from robot_framework.sub_process import sap_process, sql_process
@@ -22,23 +25,27 @@ def process(orchestrator_connection: OrchestratorConnection) -> None:
 
     session = multi_session.get_all_sap_sessions()[0]
     connection = pyodbc.connect("Driver={ODBC Driver 17 for SQL Server};Server=FaellesSQL;Trusted_Connection=yes;")
+    kombit_access = KombitAccess("55133018", "Certificate.pem")  # TODO
 
     while queue_element := orchestrator_connection.get_next_queue_element(config.QUEUE_NAME):
         try:
             data = json.loads(queue_element.data)
             cpr = data['cpr']
             aftaler = data['aftaler']
-            error = handle_task(session, connection, cpr, aftaler)
+            error = handle_task(session, connection, kombit_access, cpr, aftaler)
             orchestrator_connection.set_queue_element_status(queue_element.id, QueueStatus.IN_PROGRESS, message=error or "Brev(e) sendt")
             print(error)  # TODO
         except Exception as e:
             orchestrator_connection.set_queue_element_status(queue_element.id, QueueStatus.FAILED, message=str(e))
             raise
+        if all(v < 100 for v in win32api.GetCursorPos()):
+            print("Cursor in corner!")
+            return
 
     send_status_mail(orchestrator_connection)
 
 
-def handle_task(session, connection: pyodbc.Connection, cpr: str, aftaler: list[str]) -> str | None:
+def handle_task(session, connection: pyodbc.Connection, kombit_access: KombitAccess, cpr: str, aftaler: list[str]) -> str | None:
     """Handles a task.
 
     Args:
@@ -53,13 +60,18 @@ def handle_task(session, connection: pyodbc.Connection, cpr: str, aftaler: list[
     if cpr_util.get_age(cpr) >= 18:
         return "Person ikke under 18"
 
-    receivers = sql_process.get_guardians(cpr, connection)
-    if not receivers:
+    guardians = sql_process.get_guardians(cpr, connection)
+    if not guardians:
         return "Ingen værger fundet"
 
-    # TODO: Check for Digital Post
-    # if not registered_digital_post(guardians):
-    #   return "Værger ikke tilmeldt Digital Post"
+    # Check for Digital Post registrations
+    receivers = []
+    for g in guardians:
+        if digital_post.is_registered(g, 'digitalpost', kombit_access):
+            receivers.append(g)
+
+    if not receivers:
+        return "Ingen værger tilmeldt Digital Post."
 
     fmcacov.open_forretningspartner(session, cpr)
 
