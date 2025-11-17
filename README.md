@@ -1,4 +1,8 @@
-# Kotrolafgifter i bus
+# Kontrolafgifter i bus
+
+## Setup
+
+This process will run on a queue of elements, which need to be set up by running the script queue_load.py with a CSV as described below.
 
 ## Process arguments
 
