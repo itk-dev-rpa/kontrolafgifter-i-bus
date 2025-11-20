@@ -37,8 +37,6 @@ def main():
                 queue_element = orchestrator_connection.get_next_queue_element(config.QUEUE_NAME)
 
                 if not queue_element:
-                    orchestrator_connection.log_info("Queue empty.")
-                    finalize.finalize(orchestrator_connection)
                     break  # Break queue loop
 
                 try:
@@ -56,6 +54,10 @@ def main():
             handle_error(f"Process Error #{error_count}", error, queue_element, orchestrator_connection)
 
     too_many_errors = (error_count == config.MAX_RETRY_COUNT)
+    more_queue_elements = orchestrator_connection.get_next_queue_element(config.QUEUE_NAME)
+    if not more_queue_elements:
+        orchestrator_connection.log_info("Queue empty.")
+        finalize.on_queue_empty(orchestrator_connection)
 
     reset.clean_up(orchestrator_connection)
     reset.close_all(orchestrator_connection)

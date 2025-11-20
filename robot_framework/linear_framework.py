@@ -42,7 +42,7 @@ def main():
             handle_error(f"Process Error #{error_count}", error, None, orchestrator_connection)
 
     too_many_errors = (error_count == config.MAX_RETRY_COUNT)
-    finalize.finalize(orchestrator_connection)
+    finalize.on_queue_empty(orchestrator_connection)
 
     reset.clean_up(orchestrator_connection)
     reset.close_all(orchestrator_connection)

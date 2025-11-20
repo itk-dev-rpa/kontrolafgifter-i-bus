@@ -8,8 +8,9 @@ from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConn
 
 from robot_framework import config
 
-def finalize(orchestrator_connection: OrchestratorConnection):
-    orchestrator_connection.log_trace("Finalizing.")
+def on_queue_empty(orchestrator_connection: OrchestratorConnection):
+    """Run when the queue is empty."""
+    orchestrator_connection.log_trace("Queue is empty.")
     send_status_mail(orchestrator_connection)
 
 def send_status_mail(orchestrator_connection: OrchestratorConnection):
