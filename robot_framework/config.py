@@ -16,6 +16,8 @@ ERROR_EMAIL = "Error Email"
 
 RESULT_SENDER = "itk-rpa@mkb.aarhus.dk"
 
+SAP_LOGIN = "SAP Kontrolafgifter i Bus"
+
 # Queue specific configs
 # ----------------------
 
@@ -23,6 +25,6 @@ RESULT_SENDER = "itk-rpa@mkb.aarhus.dk"
 QUEUE_NAME = "Kontrolafgifter i bus"
 
 # The limit on how many queue elements to process
-MAX_TASK_COUNT = 100
+MAX_TASK_COUNT = 30
 
 # ----------------------

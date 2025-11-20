@@ -1,5 +1,6 @@
 Certificate.pem
 @AutomationLog.txt
+aiignore/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
