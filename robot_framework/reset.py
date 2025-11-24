@@ -3,7 +3,7 @@
 import os
 
 import pyodbc
-from itk_dev_shared_components.sap import multi_session, sap_login, sap_util, fmcacov
+from itk_dev_shared_components.sap import multi_session, sap_login
 from python_serviceplatformen.authentication import KombitAccess
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 
@@ -44,7 +44,7 @@ def open_all(orchestrator_connection: OrchestratorConnection) -> dict:
     sap_login.login_using_cli(sap_credentials.username, sap_credentials.password)
     session = multi_session.get_all_sap_sessions()[0]
     connection = pyodbc.connect("Driver={ODBC Driver 17 for SQL Server};Server=FaellesSQL;Trusted_Connection=yes;")
-    kombit_access = KombitAccess("55133018", "Certificate.pem")
+    kombit_access = KombitAccess(config.CVR, config.CERTIFICATE_PATH)
 
     return {
         'session': session,

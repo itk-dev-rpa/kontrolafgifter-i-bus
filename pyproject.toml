@@ -12,14 +12,18 @@ readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: Microsoft :: Windows",
 ]
+license = "mit"
 dependencies = [
     "OpenOrchestrator == 2.*",
     "Pillow == 9.5.0",
     "itk-dev-shared-components == 2.*",
-    "python_serviceplatformen == 1.*"
+    # These next three are just for the queue_load script,
+    # should be moved to a different project at some point.
+    "python_serviceplatformen == 3.*",
+    "pandas == 2.*",
+    "openpyxl == 3.*"
 ]
 
 [project.optional-dependencies]

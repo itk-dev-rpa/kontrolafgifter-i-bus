@@ -2,25 +2,28 @@ import json
 import csv
 import argparse
 import os
+import pandas as pd
 
 from OpenOrchestrator.database import db_util
 
 
 def process_csv(filepath):
-    with open(filepath, encoding="utf-8") as file:
-        reader = csv.reader(file, delimiter=";")
-        next(reader)
+    # Pandas håndterer både .xlsx, .xls og .csv automatisk
+    if filepath.endswith('.xlsx') or filepath.endswith('.xls'):
+        df = pd.read_excel(filepath, dtype=str)
+    else:
+        df = pd.read_csv(filepath, delimiter=";", dtype=str)
 
-        queue = {}
+    queue = {}
 
-        for line in reader:
-            cpr = line[1]
-            aftale = line[3].lstrip("0")
+    for _, row in df.iterrows():
+        cpr = str(row.iloc[1])  # Column index 1
+        aftale = str(row.iloc[3]).lstrip("0")  # Column index 3
 
-            if cpr not in queue:
-                queue[cpr] = []
+        if cpr not in queue:
+            queue[cpr] = []
 
-            queue[cpr].append(aftale)
+        queue[cpr].append(aftale)
 
     return queue
 

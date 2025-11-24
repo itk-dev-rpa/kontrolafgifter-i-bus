@@ -18,6 +18,9 @@ RESULT_SENDER = "itk-rpa@mkb.aarhus.dk"
 
 SAP_LOGIN = "SAP Kontrolafgifter i Bus"
 
+CERTIFICATE_PATH = "robot_framework/aiignore/Certificate.pem"
+CVR = "55133018"
+
 # Queue specific configs
 # ----------------------
 
